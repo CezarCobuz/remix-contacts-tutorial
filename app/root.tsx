@@ -11,6 +11,7 @@ import {
   ScrollRestoration,
   useLoaderData,
   useNavigation,
+  useSubmit,
 } from "@remix-run/react";
 import appStylesHref from "./app.css";
 import { createEmptyContact, getContacts } from "./data";
@@ -42,6 +43,8 @@ export default function App() {
     setQuery(q || "");
   }, [q]);
 
+  const submit = useSubmit();
+
   return (
     <html lang="en">
       <head>
@@ -54,7 +57,11 @@ export default function App() {
         <div id="sidebar">
           <h1>Remix Contacts</h1>
           <div>
-            <Form id="search-form" role="search">
+            <Form
+              id="search-form"
+              role="search"
+              onChange={(event) => submit(event.currentTarget)}
+            >
               <input
                 onChange={(event) => setQuery(event.currentTarget.value)}
                 id="q"
