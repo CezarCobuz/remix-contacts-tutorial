@@ -14,6 +14,7 @@ import {
 } from "@remix-run/react";
 import appStylesHref from "./app.css";
 import { createEmptyContact, getContacts } from "./data";
+import { useEffect, useState } from "react";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: appStylesHref },
@@ -23,7 +24,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
   const contacts = await getContacts(q);
-  return json({ contacts });
+  return json({ contacts, q });
 };
 
 export const action = async () => {
@@ -32,8 +33,14 @@ export const action = async () => {
 };
 
 export default function App() {
-  const { contacts } = useLoaderData<typeof loader>();
+  const { contacts, q } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
+
+  const [query, setQuery] = useState(q || "");
+
+  useEffect(() => {
+    setQuery(q || "");
+  }, [q]);
 
   return (
     <html lang="en">
@@ -49,11 +56,13 @@ export default function App() {
           <div>
             <Form id="search-form" role="search">
               <input
+                onChange={(event) => setQuery(event.currentTarget.value)}
                 id="q"
                 aria-label="Search contacts"
                 placeholder="Search"
                 type="search"
                 name="q"
+                value={query}
               />
               <div id="search-spinner" aria-hidden hidden={true} />
             </Form>
